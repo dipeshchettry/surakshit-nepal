@@ -1,0 +1,50 @@
+# Apache config for Surakshit Nepal
+# .htaccess — safe for XAMPP (no <DirectoryMatch>, no <Directory> blocks)
+
+Options -Indexes
+ServerSignature Off
+
+# ── Security Headers ─────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(self), notifications=(self)"
+</IfModule>
+
+# ── Block direct access to sensitive file extensions ─────────
+<FilesMatch "\.(sql|log|env|bak|sh)$">
+  Require all denied
+</FilesMatch>
+
+# ── Gzip Compression ─────────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json text/xml
+</IfModule>
+
+# ── Browser Caching ───────────────────────────────────────────
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css               "access plus 1 week"
+  ExpiresByType application/javascript "access plus 1 week"
+  ExpiresByType image/png              "access plus 1 month"
+  ExpiresByType image/webp             "access plus 1 month"
+  ExpiresByType image/svg+xml          "access plus 1 month"
+  ExpiresByType application/json       "access plus 0 seconds"
+</IfModule>
+
+# ── Rewrite ───────────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /weather/
+
+  # Block direct browser access to config/database/functions PHP files
+  RewriteRule ^api/config/.*\.php$  - [F,L]
+  RewriteRule ^functions/.*\.php$   - [F,L]
+  RewriteRule ^database/.*\.sql$    - [F,L]
+
+  # HTTPS redirect — uncomment on live server:
+  # RewriteCond %{HTTPS} off
+  # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>

@@ -1,0 +1,18 @@
+# Security / Sensitive config
+api/config/config.php
+cron_last_run.txt
+
+# Environment variables
+.env
+
+# Windows specific
+Thumbs.db
+Desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+.gemini/
+
+# Composer
+vendor/
